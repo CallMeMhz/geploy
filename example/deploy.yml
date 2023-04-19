@@ -1,0 +1,8 @@
+service: ping
+port: "8080"
+image: callmemhz/ping
+servers:
+  - 192.168.205.3
+registry:
+  usr: YOUR_DOCKER_HUB_USERNAME
+  pwd: YOUR_SECRET

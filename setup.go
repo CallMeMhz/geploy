@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	EnsureDocker     = `which docker || (apt-get update -y && apt-get install docker.io -y)`
-	EnsureCurl       = `which curl || (apt-get update -y && apt-get install curl)`
-	DockerRunTraefik = `docker run --name traefik --detach --restart unless-stopped --log-opt max-size=10m --publish 80:80 --volume /var/run/docker.sock:/var/run/docker.sock traefik --api.insecure=true --providers.docker --log.level=DEBUG` // fixme 为了方便调试，这里加了 insecure
+	EnsureDocker  = `which docker || (apt-get update -y && apt-get install docker.io -y)`
+	EnsureCurl    = `which curl || (apt-get update -y && apt-get install curl)`
+	EnsureTraefik = `docker start traefik || docker run --name traefik --detach --restart unless-stopped --log-opt max-size=10m --publish 80:80 --publish 8080:8080 --volume /var/run/docker.sock:/var/run/docker.sock traefik --api.insecure=true --providers.docker --log.level=DEBUG` // fixme 为了方便调试，这里加了 insecure
 )
 
 func Setup(g *Group, cfg *DeployConfig) {
@@ -17,7 +17,7 @@ func Setup(g *Group, cfg *DeployConfig) {
 		EnsureDocker,
 		EnsureCurl,
 	).Println(color.HiMagentaString("Ensrue traefik is running ...")).Run(
-		DockerRunTraefik,
+		EnsureTraefik,
 	).Println(color.HiMagentaString("Ensrue registry is logged in ...")).Run(
 		DockerLoginRegistry(cfg.Registry.Username, cfg.Registry.Password),
 	)

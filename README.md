@@ -6,6 +6,7 @@ Deploy your go application with one-tap.
 
 ```shell
 $ go install github.com/callmemhz/geploy/cmd/gg@latest
+$ echo unalias gg >> ~/.bash_profile && source ~/.bash_profile
 ```
 
 ## Usage

@@ -13,12 +13,12 @@ const (
 )
 
 func Setup(g *Group, cfg *DeployConfig) {
-	g.Parallel().Println(color.HiMagentaString("Ensrue docker is installed ...")).Run(
+	g.Parallel().Println(color.HiMagentaString("Ensure docker is installed ...")).Run(
 		EnsureDocker,
 		EnsureCurl,
-	).Println(color.HiMagentaString("Ensrue traefik is running ...")).Run(
+	).Println(color.HiMagentaString("Ensure traefik is running ...")).Run(
 		EnsureTraefik,
-	).Println(color.HiMagentaString("Ensrue registry is logged in ...")).Run(
+	).Println(color.HiMagentaString("Ensure registry is logged in ...")).Run(
 		DockerLoginRegistry(lookup(cfg.Registry.Username), lookup(cfg.Registry.Password)),
 	)
 

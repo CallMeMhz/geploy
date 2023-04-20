@@ -9,3 +9,6 @@ registry:
     - DOCKER_REGISTRY_USR
   pwd:
     - DOCKER_REGISTER_PWD
+env:
+  - FOO=BAR
+  - TEST

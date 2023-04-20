@@ -104,7 +104,7 @@ func Deploy(g *Group, cfg *DeployConfig, reDeploy bool) {
 
 	g.
 		Println(color.HiMagentaString("Force pull image ...")).
-		Run(DockerRemoveImage(image, tag)).Ignore().
+		Run(DockerRemoveImage(image, tag)).
 		Run(DockerPullImage(image, tag)).
 		Println(color.HiMagentaString("Ensure application can pass healthcheck ...")).
 		Run(
@@ -133,7 +133,7 @@ func Deploy(g *Group, cfg *DeployConfig, reDeploy bool) {
 
 	g.
 		Println(color.HiMagentaString("Start application container ...")).
-		Run(DockerStartApplicationContainer(service, port, image, tag, cfg.HealthCheck, nil)).
+		Run(DockerStartApplicationContainer(service, port, image, tag, cfg.HealthCheck, cfg.env)).
 		Println("Prune old containers and images ...").
 		Run(
 			DockerPruneOldContainers(service),

@@ -40,6 +40,6 @@ func main() {
 	case "remove":
 
 	default:
-		fmt.Println("unknwon operation")
+		fmt.Println("unknown operation")
 	}
 }

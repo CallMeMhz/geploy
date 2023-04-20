@@ -110,8 +110,10 @@ func (s *Server) Run(cmds ...string) (string, string, error) {
 		start := time.Now()
 		fmt.Printf("%3d [%s] Running %s on %s\n", id, color.HiBlueString(s.hostname), color.HiYellowString(cmd), color.HiBlueString(s.host))
 		if err := session.Run(cmd); err != nil {
-			fmt.Print(color.HiRedString(stderr.String()))
 			return stdout.String(), stderr.String(), err
+		}
+		if stderr.Len() > 0 {
+			fmt.Printf("%3d [%s] %s\n", id, s.hostname, color.HiRedString(stderr.String()))
 		}
 		color.HiBlack("%3d [%s] Finished in %s\n", id, s.hostname, time.Since(start).Truncate(time.Millisecond).String())
 	}

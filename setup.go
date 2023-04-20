@@ -1,8 +1,6 @@
 package geploy
 
 import (
-	"fmt"
-
 	"github.com/fatih/color"
 )
 
@@ -13,19 +11,11 @@ const (
 )
 
 func Setup(g *Group, cfg *DeployConfig) {
-	g.Parallel().Println(color.HiMagentaString("Ensure docker is installed ...")).Run(
-		EnsureDocker,
-		EnsureCurl,
-	).Println(color.HiMagentaString("Ensure traefik is running ...")).Run(
-		EnsureTraefik,
-	).Println(color.HiMagentaString("Ensure registry is logged in ...")).Run(
-		DockerLoginRegistry(lookup(cfg.Registry.Username), lookup(cfg.Registry.Password)),
-	)
-
-	for i, err := range g.Errors() {
-		if err != nil {
-			s := g.servers[i]
-			fmt.Printf("[%s] %s on %s\n", color.HiBlueString(s.hostname), color.HiRedString(err.Error()), color.HiBlueString(s.host))
-		}
-	}
+	g.
+		Println(color.HiMagentaString("Ensure docker is installed ...")).
+		Run(EnsureDocker, EnsureCurl).
+		Println(color.HiMagentaString("Ensure traefik is running ...")).
+		Run(EnsureTraefik).
+		Println(color.HiMagentaString("Ensure registry is logged in ...")).
+		Run(DockerLoginRegistry(lookup(cfg.Registry.Username), lookup(cfg.Registry.Password)))
 }

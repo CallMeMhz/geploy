@@ -85,7 +85,7 @@ func Deploy(g *Group, cfg *DeployConfig, reDeploy bool) {
 	} else {
 		fmt.Println(color.HiMagentaString("Build and Push Application Image ..."))
 
-		// todo rmoete build
+		// todo remote build
 		cmd := exec.Command("docker", "build",
 			"-t", image+":latest",
 			"-t", image+":"+tag,
@@ -102,15 +102,16 @@ func Deploy(g *Group, cfg *DeployConfig, reDeploy bool) {
 		}
 	}
 
-	g.Parallel().Println(color.HiMagentaString("Force pull image ...")).Run(
-		DockerRemoveImage(image, tag),
-	).Ignore().Run(
-		DockerPullImage(image, tag),
-	).Println(color.HiMagentaString("Ensure application can pass healthcheck ...")).Run(
-		DockerStartTraefik,
-		DockerRunHealthcheck(service, port, image, tag, nil),
-		HealthCheck("localhost:3999"+cfg.HealthCheck),
-	)
+	g.
+		Println(color.HiMagentaString("Force pull image ...")).
+		Run(DockerRemoveImage(image, tag)).Ignore().
+		Run(DockerPullImage(image, tag)).
+		Println(color.HiMagentaString("Ensure application can pass healthcheck ...")).
+		Run(
+			DockerStartTraefik,
+			DockerRunHealthcheck(service, port, image, tag, nil),
+			HealthCheck("localhost:3999"+cfg.HealthCheck),
+		)
 	healtcheckFailed := false
 	for i := range g.servers {
 		lines := strings.Split(g.stdouts[i], "\n")
@@ -119,10 +120,10 @@ func Deploy(g *Group, cfg *DeployConfig, reDeploy bool) {
 			healtcheckFailed = true
 			fmt.Println(color.RedString("Health check failed"), "(", color.HiYellowString(code), ")", "on", color.HiBlueString(g.servers[i].host))
 		} else {
-			fmt.Println("Health check succedd", "(", color.HiGreenString(code), ")", "on", color.HiBlueString(g.servers[i].host))
+			fmt.Println("Health check succeed", "(", color.HiGreenString(code), ")", "on", color.HiBlueString(g.servers[i].host))
 		}
 	}
-	g.Parallel().Run(
+	g.Run(
 		DockerStopContainer(fmt.Sprintf(`healthcheck-%s-%s`, service, tag)),
 		DockerRemoveContainer(fmt.Sprintf(`healthcheck-%s-%s`, service, tag)),
 	)
@@ -130,12 +131,14 @@ func Deploy(g *Group, cfg *DeployConfig, reDeploy bool) {
 		return
 	}
 
-	g.Parallel().Println(color.HiMagentaString("Start application container ...")).Run(
-		DockerStartApplicationContainer(service, port, image, tag, cfg.HealthCheck, nil),
-	).Println("Prune old containers and images ...").Run(
-		DockerPruneOldContainers(service),
-		DockerPruneOldImages(service),
-	)
+	g.
+		Println(color.HiMagentaString("Start application container ...")).
+		Run(DockerStartApplicationContainer(service, port, image, tag, cfg.HealthCheck, nil)).
+		Println("Prune old containers and images ...").
+		Run(
+			DockerPruneOldContainers(service),
+			DockerPruneOldImages(service),
+		)
 }
 
 func run(cmd *exec.Cmd) error {

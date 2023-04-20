@@ -1,13 +1,11 @@
 service: ping
-port: "8080"
+port: 8080
 image: callmemhz/ping
 servers:
   - 192.168.205.3
   - 192.168.205.4
 registry:
-  usr: DOCKER_REGISTRY_USR
-  pwd: DOCKER_REGISTER_PWD
-
-secret:
-  - DOCKER_REGISTRY_USR
-  - DOCKER_REGISTER_PWD
+  usr:
+    - DOCKER_REGISTRY_USR
+  pwd:
+    - DOCKER_REGISTER_PWD

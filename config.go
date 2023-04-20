@@ -1,7 +1,6 @@
 package geploy
 
 import (
-	"bytes"
 	"os"
 	"path/filepath"
 
@@ -21,14 +20,16 @@ type DeployConfig struct {
 	} `yaml:"ssh,omitempty"`
 
 	Registry struct {
-		Username string `yaml:"usr"`
-		Password string `yaml:"pwd"`
+		Username any `yaml:"usr"`
+		Password any `yaml:"pwd"`
 	} `yaml:"registry"`
-
-	Secret []string `yaml:"secret,omitempty"`
 }
 
 func LoadDeployConfig() (*DeployConfig, error) {
+	if err := godotenv.Load(); err != nil {
+		return nil, err
+	}
+
 	workdir, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -44,20 +45,6 @@ func LoadDeployConfig() (*DeployConfig, error) {
 		return nil, err
 	}
 
-	if len(cfg.Secret) > 0 {
-		secret := cfg.Secret
-		if err := godotenv.Load(); err != nil {
-			return nil, err
-		}
-		for _, field := range cfg.Secret {
-			data = bytes.ReplaceAll(data, []byte(field), []byte(os.Getenv(field)))
-		}
-		if err := yaml.Unmarshal(data, cfg); err != nil {
-			return nil, err
-		}
-		cfg.Secret = secret
-	}
-
 	if cfg.HealthCheck == "" {
 		cfg.HealthCheck = "/ping"
 	}
@@ -65,4 +52,15 @@ func LoadDeployConfig() (*DeployConfig, error) {
 		cfg.SshConfig.Username = "root"
 	}
 	return cfg, nil
+}
+
+func lookup(key any) string {
+	switch key := key.(type) {
+	case string:
+		return key
+	case []any:
+		return os.Getenv(key[0].(string))
+	default:
+		panic("key not found")
+	}
 }

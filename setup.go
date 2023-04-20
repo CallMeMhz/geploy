@@ -19,7 +19,7 @@ func Setup(g *Group, cfg *DeployConfig) {
 	).Println(color.HiMagentaString("Ensrue traefik is running ...")).Run(
 		EnsureTraefik,
 	).Println(color.HiMagentaString("Ensrue registry is logged in ...")).Run(
-		DockerLoginRegistry(cfg.Registry.Username, cfg.Registry.Password),
+		DockerLoginRegistry(lookup(cfg.Registry.Username), lookup(cfg.Registry.Password)),
 	)
 
 	for i, err := range g.Errors() {
